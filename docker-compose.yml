@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: checkout-postgres
+    environment:
+      POSTGRES_DB: checkoutdb
+      POSTGRES_USER: checkout_user
+      POSTGRES_PASSWORD: checkout_pass
+      TZ: UTC
+      PGTZ: UTC
+    command: postgres -c timezone=UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: checkout-redis
+    ports:
+      - "6379:6379"
+
+  localstack:
+    image: localstack/localstack:3
+    container_name: checkout-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - DEFAULT_REGION=us-east-1
+    volumes:
+      - "./localstack-init:/etc/localstack/init/ready.d"
+
+volumes:
+  postgres-data:
